@@ -75,6 +75,7 @@ def front_back(a, b):
 
   return res_string
 
+# new comment!
 
 # Simple provided test() function used in main() to print
 # what each function returns vs. what it's supposed to return.
