@@ -85,7 +85,6 @@ def test(got, expected):
     prefix = '  X '
   print '%s got: %s expected: %s' % (prefix, repr(got), repr(expected))
 
-
 # main() calls the above functions with interesting inputs,
 # using the above test() to check if the result is correct or not.
 def main():
