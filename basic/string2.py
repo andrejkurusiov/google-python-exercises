@@ -70,12 +70,10 @@ def front_back(a, b):
   bfront = b[:ib]
   aback = a[ia:]
   bback = b[ib:]
-  
+     
   res_string = afront + bfront + aback + bback
 
   return res_string
-
-# new comment!  
 
 # Simple provided test() function used in main() to print
 # what each function returns vs. what it's supposed to return.
