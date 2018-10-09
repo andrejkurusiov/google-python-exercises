@@ -78,7 +78,7 @@ def front_back(a, b):
 # Simple provided test() function used in main() to print
 # what each function returns vs. what it's supposed to return.
 def test(got, expected):
-  if got == expected
+  if got == expected:
     prefix = ' OK '
   else:
     prefix = '  X '
