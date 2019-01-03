@@ -47,6 +47,52 @@ import sys
 
 ###
 
+# read file and return file handle
+def readfile(filename):
+  f = open(filename, 'rU')
+  return f
+
+# read all lines from a file handle f and populate a hash with words and their frequency
+def read_words(f):
+  hash = {}
+
+  def fill_hash(buffer):
+    for word in buffer:
+      if word in hash:
+        hash[word] += 1
+      else:
+        hash[word] = 1
+  
+  for line in f:
+    # split to words and fill the hash
+    fill_hash(line.lower().split())
+    #print line, word_buffer
+    #print hash
+  f.close()
+  return hash
+
+# Counts how often each word appears in the text and prints
+#   word1 count1
+#   word2 count2 etc.
+def print_words(filename):
+  dict = {}
+  dict = read_words(readfile(filename))
+  for word, freq in sorted(dict.items()):
+    print word, freq
+
+# returns second item (frequency) in a given tulip
+def freq_item(tulip):
+  return tulip[1]
+
+# Prints just the top 20 most common words sorted so the most common word is first, then the next most common, and so on.
+def print_top(filename):
+  dict = {}
+  dict = read_words(readfile(filename))
+  sorted_dict = sorted(dict.items(), key=freq_item, reverse=True)
+  for word, freq in sorted_dict[:20]:
+    print word, freq
+
+
 # This basic command line argument parsing code is provided and
 # calls the print_words() and print_top() functions which you must define.
 def main():
