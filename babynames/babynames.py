@@ -37,9 +37,8 @@ Suggested milestones for incremental development:
 # add tuple[1-2] name to dic
 def Add_name(name, rank, dic):
   if (name in dic):
-    #print name, dic[name]
+    # take only lower rank to the dic
     if int(dic[name]) > int(rank):
-      #print name, dic[name], "->", rank
       dic[name] = int(rank)
   else:
     dic[name] = int(rank)
@@ -108,8 +107,16 @@ def main():
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
   for filename in args:
-    #print filename, ":\n"
-    print '\n'.join(Extract_names(filename)) + '\n'
+    # Form year and names with rank list
+    names = Extract_names(filename)
+    # Make text out of the whole list
+    text = '\n'.join(names)
+    if summary:
+      outf = open(filename + ".summary", 'w')
+      outf.write(text + '\n')
+      outf.close()
+    else:
+      print text
   
 if __name__ == '__main__':
   main()
