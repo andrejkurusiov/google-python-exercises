@@ -18,6 +18,29 @@ import commands
 # +++your code here+++
 # Write functions and modify main() to call them
 
+# returns a list of the absolute paths of the special files in the given directory
+def get_special_paths(dir):
+  abspathlist = []  # all files' absolute paths' list
+  filenames = os.listdir(dir)
+  for filex in filenames:
+    # check if special --> to list
+    filename_special = re.search(r'\w*__\w+__.*', filex)
+    if filename_special:
+      abspathlist.append(os.path.abspath(os.path.join(dir, filex)))
+  
+  return abspathlist
+
+
+# given a list of paths, copies those files into the given directory
+def copy_to(paths, dir):
+  print 'copy_to function'
+  return
+
+
+# given a list of paths, zip those files up into the given zipfile
+def zip_to(paths, zippath):
+  print 'zip_to function'
+  return
 
 
 def main():
@@ -50,6 +73,12 @@ def main():
 
   # +++your code here+++
   # Call your functions
-  
+  dir = args[0] #; print 'dir: ', dir
+  #print "todir: ", todir, "tozip: ", tozip, "not (todir and tozip): ", not (todir or tozip)
+  #sys.exit(1)
+  if todir: copy_to(todir, dir); return
+  if tozip: zip_to(tozip, dir); return
+  if(todir == '' and tozip == ''): print '\n'.join(get_special_paths(dir)); return
+
 if __name__ == "__main__":
   main()
