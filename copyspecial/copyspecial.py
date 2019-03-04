@@ -27,13 +27,26 @@ def get_special_paths(dir):
     filename_special = re.search(r'\w*__\w+__.*', filex)
     if filename_special:
       abspathlist.append(os.path.abspath(os.path.join(dir, filex)))
-  
+
   return abspathlist
 
 
 # given a list of paths, copies those files into the given directory
-def copy_to(paths, dir):
-  print 'copy_to function'
+def copy_to(todir, fromdir):
+  #print 'copy_to function'
+  #print 'todir: ', todir
+  #print 'os.path.exists(todir): ', os.path.exists(todir)
+  if not os.path.exists(todir):
+    print "error: target directory does not exist, creating.."
+    os.mkdir(todir)
+    print todir, " directory is created."
+    #sys.exit(1)
+  filelist = get_special_paths(fromdir)
+  for filex in filelist:
+    os.path.join(todir, os.path.basename(filex))
+    print 'copying', os.path.basename(filex), 'to', todir, 'folder..',
+    shutil.copy(filex, todir)
+    print 'done.'
   return
 
 
@@ -51,7 +64,7 @@ def main():
   # which is the script itself.
   args = sys.argv[1:]
   if not args:
-    print "usage: [--todir dir][--tozip zipfile] dir [dir ...]";
+    print "usage: [--todir dir][--tozip zipfile] dir [dir ...]"
     sys.exit(1)
 
   # todir and tozip are either set from command line
@@ -73,9 +86,7 @@ def main():
 
   # +++your code here+++
   # Call your functions
-  dir = args[0] #; print 'dir: ', dir
-  #print "todir: ", todir, "tozip: ", tozip, "not (todir and tozip): ", not (todir or tozip)
-  #sys.exit(1)
+  dir = args[0]
   if todir: copy_to(todir, dir); return
   if tozip: zip_to(tozip, dir); return
   if(todir == '' and tozip == ''): print '\n'.join(get_special_paths(dir)); return
