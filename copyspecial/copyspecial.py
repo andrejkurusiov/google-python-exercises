@@ -18,41 +18,108 @@ import commands
 # +++your code here+++
 # Write functions and modify main() to call them
 
+def path_exists(dir):
+  """ Returns 1 is given path doesn't exist; otherwise 0. """
+  if not os.path.exists(dir): return 1
+  else: return 0
+
+
+def check_path(dir, todir, funct):
+  """
+    Checks two paths for existence and depending on funct value creates missing path.
+  """
+  errcode = 0
+  errmsg = ''
+  if funct == 'get_special_paths':
+    errcode = path_exists(dir)
+    if errcode: errmsg = 'Path ' + dir + ' does not exist!'
+  elif funct == 'copy_to':
+    errcode = path_exists(dir)
+    if errcode:
+      errmsg = 'Path ' + dir + ' does not exist!'
+      return (errcode, errmsg)
+    errcode = path_exists(todir)
+    if errcode: # path doesn't exist, try creating directories
+      try:
+        os.makedirs(todir)
+        errcode = 0
+      except IOError:
+        errmsg = 'Can\'t create ' + todir + ' folder!'
+        return (errcode, errmsg)
+  elif funct == 'zip_to':
+    errcode = path_exists(dir)
+    if errcode:
+      errmsg = 'Path ' + dir + ' does not exist!'
+      return (errcode, errmsg)
+    errcode = path_exists(os.path.dirname(todir)) # decode path only as filename can be in the input string
+    if errcode: # path doesn't exist, try creating directories
+      try:
+        os.makedirs(os.path.dirname(todir))
+        errcode = 0
+        errmsg = 'New path ' + os.path.dirname(todir) + ' created.'
+      except IOError:
+        errmsg = 'Can\'t create ' + todir + ' folder!'
+        return (errcode, errmsg)
+  else:
+    errcode = 1
+    errmsg = 'check_path: funct not recognized!'
+  return (errcode, errmsg)
+
+
 # returns a list of the absolute paths of the special files in the given directory
 def get_special_paths(dir):
   abspathlist = []  # all files' absolute paths' list
+  (errcode, errtext) = check_path(dir, '', 'get_special_paths')
+  if errcode:
+    print errtext
+    return abspathlist
   filenames = os.listdir(dir)
   for filex in filenames:
     # check if special --> to list
     filename_special = re.search(r'\w*__\w+__.*', filex)
     if filename_special:
       abspathlist.append(os.path.abspath(os.path.join(dir, filex)))
-
   return abspathlist
 
 
-# given a list of paths, copies those files into the given directory
 def copy_to(todir, fromdir):
-  #print 'copy_to function'
-  #print 'todir: ', todir
-  #print 'os.path.exists(todir): ', os.path.exists(todir)
-  if not os.path.exists(todir):
-    print "error: target directory does not exist, creating.."
-    os.mkdir(todir)
-    print todir, " directory is created."
-    #sys.exit(1)
+  # given a list of paths, copies those files into the given directory
+  (errcode, errtext) = check_path(fromdir, todir, 'copy_to')
+  if errcode:
+    print errtext
+    return
   filelist = get_special_paths(fromdir)
   for filex in filelist:
     os.path.join(todir, os.path.basename(filex))
-    print 'copying', os.path.basename(filex), 'to', todir, 'folder..',
+    print 'Copying', os.path.basename(filex), 'to', todir, 'folder..',
     shutil.copy(filex, todir)
     print 'done.'
   return
 
 
-# given a list of paths, zip those files up into the given zipfile
-def zip_to(paths, zippath):
-  print 'zip_to function'
+def zip_to(zipfile, zippath):
+  # given a list of paths, zip those files up into the given zipfile
+  print 'zip_to function: make "'+ zipfile + '" file from special files found in "' + zippath + '" folder.'
+  (errcode, errtext) = check_path(zippath, zipfile, 'zip_to') # check zip file path and create it if necessary
+  if errcode:
+    sys.stderr.write(errtext + '\n')
+    sys.stderr.write('Errorcode: ' + str(errcode) + '\n')
+    sys.exit(errcode)
+  if errtext: print errtext # info about dir created
+  cmd = 'zip -j ' + zipfile
+  filenames = get_special_paths(zippath)
+  if len(filenames) == 0:
+    print 'No files to archive, exiting.'
+    sys.exit(0)
+  for fname in filenames:
+     cmd = cmd + ' ' + fname
+  print 'Command to be run:', cmd
+  (status, output) = commands.getstatusoutput(cmd)
+  if status:
+    sys.stderr.write('Problem creating zip file: ' + zipfile + '\n')
+    sys.stderr.write(output + '\n')
+    sys.exit('status: ' + str(status) + '\n')
+  else: print 'Done!'
   return
 
 
