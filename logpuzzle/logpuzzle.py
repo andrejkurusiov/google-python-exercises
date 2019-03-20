@@ -19,13 +19,57 @@ Here's what a puzzle url looks like:
 """
 
 
+def path_exists(dir):
+  """ Returns 1 is given path doesn't exist; otherwise 0. """
+  if os.path.exists(dir): return 1
+  else: return 0
+
+""" def sortedFn(s):
+  # sorts strings like 'http://code.google.com/edu/languages/google-python-class/images/puzzle/a-babf.jpg' by file name
+  return re.search(r'\w*-\w*.jpg$', os.path.basename(s)).group(0) """
+
+""" def wget(url):
+  # Tries reading given URL, if it works and of 'text/html' type, returns base url
+  try:
+    ufile = urllib.urlopen(url)
+    if ufile.info().gettype() == 'text/html':
+      return ufile.geturl()
+    else:
+      return 'url ' + url + ' is not text/html type.'
+  except IOError:
+    return 'problem reading url: ' + url """
+
 def read_urls(filename):
   """Returns a list of the puzzle urls from the given log file,
   extracting the hostname from the filename itself.
   Screens out duplicate urls and returns the urls sorted into
   increasing order."""
   # +++your code here+++
+  result = []
+  if not path_exists(filename):
+    print 'Path ' + filename + ' doesn\'t exist!'
+    sys.exit(1)
   
+  # get base url from the filename
+  match = re.search(r'\S*_(\S*)', filename)
+  host = 'http://' + match.group(1)
+  """   try:
+    ufile = urllib.urlopen('http://' + match.group(1))
+    print ufile.geturl()
+  except IOError:
+    print 'error retrieving ' + match.group(1) """
+  
+  # read file for urls
+  file = open(filename, 'rU')
+  for line in file:
+    match = re.search(r'\S*puzzle\S*', line)
+    if match:
+      result.append(host + match.group())
+  file.close()
+  # sort the list and remove duplicates (-> set)
+  #return sorted(set(result), key=sortedFn)
+  return sorted(set(result))
+
 
 def download_images(img_urls, dest_dir):
   """Given the urls already in the correct order, downloads
@@ -44,6 +88,9 @@ def main():
   if not args:
     print 'usage: [--todir dir] logfile '
     sys.exit(1)
+
+  #print wget(args[0])
+  #sys.exit(0)
 
   todir = ''
   if args[0] == '--todir':
