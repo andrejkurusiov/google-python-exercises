@@ -24,6 +24,7 @@ def path_exists(dir):
   if os.path.exists(dir): return 1
   else: return 0
 
+
 def check_create_dir(dir):
   # checks if directory exists and if not, creates one
   if path_exists(dir):
@@ -37,20 +38,12 @@ def check_create_dir(dir):
       sys.exit(IOError)
 
 
-""" def sortedFn(s):
+def sortedFn(s):
   # sorts strings like 'http://code.google.com/edu/languages/google-python-class/images/puzzle/a-babf.jpg' by file name
-  return re.search(r'\w*-\w*.jpg$', os.path.basename(s)).group(0) """
+  match = re.search(r'-\w+-(\w+).jpg$', os.path.basename(s))
+  if match: return match.group(1)
+  else: return s
 
-""" def wget(url):
-  # Tries reading given URL, if it works and of 'text/html' type, returns base url
-  try:
-    ufile = urllib.urlopen(url)
-    if ufile.info().gettype() == 'text/html':
-      return ufile.geturl()
-    else:
-      return 'url ' + url + ' is not text/html type.'
-  except IOError:
-    return 'problem reading url: ' + url """
 
 def read_urls(filename):
   """Returns a list of the puzzle urls from the given log file,
@@ -70,13 +63,13 @@ def read_urls(filename):
   # read file for urls
   file = open(filename, 'rU')
   for line in file:
-    match = re.search(r'\S*puzzle\S*', line)
+    match = re.search(r'\S*puzzle\S*.jpg', line)
     if match:
       result.append(host + match.group())
   file.close()
   # sort the list and remove duplicates (-> set)
-  #return sorted(set(result), key=sortedFn)
-  return sorted(set(result))
+  return sorted(set(result), key=sortedFn)
+  #return sorted(set(result))
 
 
 def download_images(img_urls, dest_dir):
